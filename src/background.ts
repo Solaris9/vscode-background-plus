@@ -34,7 +34,11 @@ export async function install() {
     const globalStyle = await getConfig("config") as Partial<Style>;
     const style = { ...defaultCSS, ...globalStyle, ...selectedStyle };
 
-    const css = await generateCSS(style, selected?.url);
+    const url = selected.url.startsWith("file://") ?
+        selected.url.replace("file://", "vscode-file://vscode-app") :
+        selected.url;
+
+    const css = await generateCSS(style, url);
     await fs.writeFile(cssPath, content + css);
 }
 
@@ -52,7 +56,8 @@ export async function uninstall() {
 }
 
 async function generateCSS(style: Partial<Style>, url?: string) {
-    const css = Object.entries(style).reduce((acc, [key, value]) => acc + `${key}: ${value};`, "");
+    const css = Object.entries(style)
+        .reduce((acc, [k, v]) => acc + `${k}: ${v};`, "");
     
     return `\n${keyStart}\n${BODY_SELECTOR} {
         background-image: url("${url}");

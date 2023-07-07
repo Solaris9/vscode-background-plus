@@ -22,7 +22,7 @@ export default {
         const url = await vscode.window.showInputBox({
             title: "Set a URL for this image.",
             validateInput(value) {
-                if (!/https?:\/\//.test(value)) {
+                if (!/^((file|https)?:\/\/|\/)/.test(value)) {
                     return "Input is not a valid HTTP image.";
                 }
 
@@ -35,8 +35,8 @@ export default {
         }
         
         items.push({
-            name: name as string,
-            url: url as string
+            name,
+            url: url.startsWith("/") ? `file://${url}` : url
         });
 
         await setConfig("images", items);
