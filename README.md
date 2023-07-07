@@ -15,6 +15,7 @@ Set a custom background for your VS Code editor!
 - `Background+: Uninstall`:
 
 > Uninstall any custom CSS previously install from Background+.
+>
 > Note: Before uninstalling the extension please run this command.
 
 - `Background+ Select`:
@@ -33,6 +34,6 @@ Set a custom background for your VS Code editor!
 
 The extension uses a specific order for the styles, each style will be overwritten by the next, the background CSS will always overwrite any properties found in the previous styles.
 
-First the [default CSS](https://github.com/Solaris9/vscode-backgound-plus/blob/main/src/background.ts#L14-19) is applied, secondly the extension's global CSS in the settings.json is applied, and finally the current background image's is applied last.
+First the [default CSS](https://github.com/Solaris9/vscode-background-plus/blob/main/src/background.ts#L14-L19) is applied, secondly the extension's global CSS in the settings.json is applied, and finally the current background image's is applied last.
 
-You can see how it works [here](https://github.com/Solaris9/vscode-backgound-plus/blob/main/src/background.ts#L35).
+You can see how it works [here](https://github.com/Solaris9/vscode-background-plus/blob/main/src/background.ts#L35).

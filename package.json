@@ -12,6 +12,8 @@
     "Other"
   ],
   "activationEvents": [],
+  "repository": "https://github.com/Solaris9/vscode-background-plus",
+  "bugs": "https://github.com/Solaris9/vscode-background-plus/issues",
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
