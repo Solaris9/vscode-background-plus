@@ -1,14 +1,51 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import vscode from "vscode";
+import vscode, { QuickPick, QuickPickItem } from "vscode";
 import { defaultCSS, install, uninstall } from "./background";
-import { Config, Style, getConfig, setConfig } from "./extension";
+import { getConfig, setConfig } from "./extension";
+
+async function getSelected(list: QuickPick<QuickPickItem>) {    
+    return new Promise((res) => {
+        list.show();
+        list.onDidAccept(() => {
+            res(list.selectedItems[0].label);
+        });
+    });
+}
 
 export default {
     add: async function () {
-        const items = getConfig("images") as Config["images"];
+        const type = await vscode.window.showQuickPick(
+            ["Local image", "HTTP image"],
+            { title: "Is this a local image or a HTTP image?" }
+        );
 
-        let name: string;
-        let exists = false;
+        let url: string;
+
+        if (type === "Local image") {
+            const result = await vscode.window.showOpenDialog({
+                canSelectMany: false,
+                filters: {
+                    Images: [ "webp", "png", "jpg", "jpeg", "gif", "apng" ]
+                },
+                title: "Select a image to use as a background image."
+            });
+
+            url = `file://${result![0].path}`;
+        } else {
+            url = await vscode.window.showInputBox({
+                title: "Set a URL for this image.",
+                validateInput(value) {
+                    if (!/^((file|https)?:\/\/|\/)/.test(value)) {
+                        return "Input is not a valid HTTP image.";
+                    }
+    
+                    return null;
+                },
+            }) as string;
+        }
+
+        const items = getConfig("images")!;
+        let name: string, exists = false;
         
         do {
             name = await vscode.window.showInputBox({
@@ -19,27 +56,9 @@ export default {
             exists = !!items.find(i => i.name === name);
         } while (exists);
 
-        const url = await vscode.window.showInputBox({
-            title: "Set a URL for this image.",
-            validateInput(value) {
-                if (!/^((file|https)?:\/\/|\/)/.test(value)) {
-                    return "Input is not a valid HTTP image.";
-                }
-
-                return null;
-            },
-        });
-
-        if (!name || !url) {
-            return true;
-        }
+        if (!name || !url) { return true; }
         
-        items.push({
-            name,
-            url: url.startsWith("/") ? `file://${url}` : url
-        });
-
-        await setConfig("images", items);
+        await setConfig("images", [...items, { name, url }]);
         await setConfig("selected", name);
         await install();
     },
@@ -51,43 +70,36 @@ export default {
         await uninstall();
     },
     select: async function () {
-        const items = (getConfig("images") as Config["images"]).map(i => i.name);
-        const selected = await vscode.window.showQuickPick(items);
+        const items = getConfig("images")!.map(i => i.name);
 
-        await setConfig("selected", selected);
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.items = [
+            { label: "Remove selected background." },
+            { label: "", kind: -1 },
+            ...items.map(i => ({ label: i }))
+        ];
+        
+        const selected = await getSelected(quickPick);
+        await setConfig("selected", selected !== "Remove" ? selected : undefined);
         await install();
     },
-    opacity: async function () {
-        const items = getConfig("images") as Config["images"];
-        const selectedKey = getConfig("selected") as string | undefined;
-        const style = (items.find(i => i.name === selectedKey) ?? items[0]).style ?? getConfig("style") as Style;
-        const currentOpacity = (style.opacity ?? defaultCSS.opacity!) * 100;
-
+    "global-opacity": async function () {
+        const currentOpacity = getConfig("style")?.opacity ?? defaultCSS.opacity!;
         const opacity = await promptOpacity(currentOpacity);
-        const selected = items.find(i => i.name === selectedKey);
 
-        if (selected?.style) {
-            selected.style.opacity = opacity;
-            await setConfig("images", items);
-        } else {
-            const currentStyle = getConfig("style") as Style;
-            await setConfig("style", { ...currentStyle, opacity });
-        }
-
+        await setConfig("style", { ...getConfig("style"), opacity });
         await install();
     },
     "selected-opacity": async function () {
-        const items = getConfig("images") as Config["images"];
-        const selectedKey = getConfig("selected") as string | undefined;
+        const items = getConfig("images")!;
+        const selected = items.find(i => i.name === getConfig("selected"));
 
-        if (!items.length || !selectedKey) {
+        if (!selected) {
             vscode.window.showInformationMessage("No background images set.");
             return;
         }
 
-        const selected = items.find(i => i.name === selectedKey)!;
         const opacity = await promptOpacity(selected.style?.opacity ?? defaultCSS.opacity!);
-
         selected.style = { ...selected.style, opacity };
         await setConfig("images", items);
 
@@ -95,9 +107,9 @@ export default {
     }
 };
 
-async function promptOpacity(currentOpacity: number) {
+async function promptOpacity(currentOpacity: string) {
     const opacity = await vscode.window.showInputBox({
-        title: `Provide a new background opacity (0 - 100%) (current: ${currentOpacity}%)`,
+        title: `Provide a new background opacity (0 - 100%) (current: ${Number(currentOpacity) * 100}%)`,
         validateInput(value) {
             if (!/\d{1,3}%?/.test(value)) {
                 return "Value is not a percent, e.g. 85%";
@@ -108,9 +120,9 @@ async function promptOpacity(currentOpacity: number) {
     });
 
     if (!opacity) {
-        vscode.window.showErrorMessage(`Failed to get opacity from user input. Defaulting to ${defaultCSS.opacity! * 100}%`);
-        return defaultCSS.opacity!;
+        vscode.window.showErrorMessage(`Failed to get opacity from user input. Defaulting to ${Number(defaultCSS.opacity) * 100}%`);
+        return defaultCSS.opacity;
     }
 
-    return Number(opacity.replace("%", "")) / 100;
+    return (Number(opacity.replace("%", "")) / 100).toString();
 }

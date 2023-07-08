@@ -12,7 +12,7 @@ const cssFileName = "workbench.desktop.main.css";
 const cssPath = path.join(require.main!.path, "vs", "workbench", cssFileName);
 
 export const defaultCSS: Partial<Style> = {
-    "opacity": 0.8,
+    "opacity": "0.85",
     "background-position": "center",
     "background-repeat": "no-repeat",
     "background-size": "cover"
@@ -21,23 +21,16 @@ export const defaultCSS: Partial<Style> = {
 export async function install() {
     const content = await fs.readFile(cssPath, { encoding: "utf-8" });
 
-    const images = await getConfig("images") as Config["images"];
+    const images = getConfig("images")!;
     if (!images.length) {
         vscode.window.showInformationMessage("No images were set to use.");
         return;
     }
 
-    const selectedKey = await getConfig("selected") as string | null;
-    const selected = images.find(i => i.name === selectedKey) || images[0];
+    const selected = images.find(i => i.name === getConfig("selected")) || images[0];
+    const style = { ...defaultCSS, ...getConfig("style"), ...selected.style };
 
-    const selectedStyle = selected.style as Partial<Style>;
-    const globalStyle = await getConfig("config") as Partial<Style>;
-    const style = { ...defaultCSS, ...globalStyle, ...selectedStyle };
-
-    const url = selected.url.startsWith("file://") ?
-        selected.url.replace("file://", "vscode-file://vscode-app") :
-        selected.url;
-
+    const url = selected.url.replace("file://", "vscode-file://vscode-app");
     const css = await generateCSS(style, url);
     await fs.writeFile(cssPath, content + css);
 }
@@ -59,6 +52,16 @@ async function generateCSS(style: Partial<Style>, url?: string) {
     const css = Object.entries(style)
         .reduce((acc, [k, v]) => acc + `${k}: ${v};`, "");
     
+    const mode = getConfig("mode")!;
+
+    switch (mode) {
+        case "fullscreen":
+            break;
+        case "editor":
+            break;
+    }
+
+
     return `\n${keyStart}\n${BODY_SELECTOR} {
         background-image: url("${url}");
         ${css}

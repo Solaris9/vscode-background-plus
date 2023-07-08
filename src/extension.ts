@@ -2,13 +2,14 @@
 import vscode from 'vscode';
 import commands from './commands';
 
-export type Style = {
-	"opacity": number;
-	"background-size": string;
-	"background-repeat": string;
-	"background-attachment": string;
-	"background-position": string;
-};
+type Object<V, K extends keyof any> = Record<K, V>; 
+
+export type Style = Object<string,
+	"opacity" |
+	"background-size" |
+	"background-repeat" |
+	"background-attachment" |
+	"background-position">;
 
 export type Config = {
 	enabled: boolean;
@@ -44,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-export function getConfig(key: string) {
+export function getConfig<K extends keyof Config>(key: K): Config[K] | undefined {
 	return vscode.workspace
 		.getConfiguration("background-plus")
 		.get(key);

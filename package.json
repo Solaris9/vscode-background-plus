@@ -34,8 +34,8 @@
         "title": "Background+: Select a background from the images list"
       },
       {
-        "command": "background-plus.opacity",
-        "title": "Background+: Change the opacity of the background image"
+        "command": "background-plus.global-opacity",
+        "title": "Background+: Change the global opacity style"
       },
       {
         "command": "background-plus.selected-opacity",
@@ -43,41 +43,44 @@
       }
     ],
     "configuration": {
-      "title": "background-plus",
+      "title": "Background+",
       "properties": {
         "background-plus.mode": {
           "type": "string",
           "description": "Fullscreen mode covers the entire window, editor mode covers each editor.",
           "default": "fullscreen",
-          "anyOf": [
+          "enum": [
             "fullscreen",
             "editor"
+          ],
+          "enumItemLabels": [
+            "Fullscreen background",
+            "Per editor window background"
           ]
         },
         "background-plus.selected": {
           "type": "string",
+          "$schema": "",
           "description": "Use a specific image, this overrides carousel."
         },
-        "background-plus.carousel": {
-          "title": "Carousel, only enabled if interval is greater than 0.",
-          "type": "object",
-          "properties": {
-            "interval": {
-              "type": "number",
-              "description": "How long should each image be shown?",
-              "default": 0
-            },
-            "unique": {
-              "type": "boolean",
-              "description": "If using editor mode, should each editor be a unique image?",
-              "default": true
-            }
-          }
+        "background-plus.carousel.interval": {
+          "type": "number",
+          "description": "The duration in seconds each background should be shown. Set to 0 to disable.",
+          "default": 0
+        },
+        "background-plus.carousel.unique": {
+          "type": "boolean",
+          "description": "If using editor mode, should each editor be a unique image?",
+          "default": true
         },
         "background-plus.style": {
           "type": "object",
+          "description": "Global styles for every background.",
+          "additionalProperties": {
+            "type": "string"
+          },
           "default": {
-            "opacity": 0.85,
+            "opacity": "0.85",
             "background-size": "cover",
             "background-position": "center",
             "background-repeat": "no-repeat"
