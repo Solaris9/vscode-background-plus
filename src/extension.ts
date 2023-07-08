@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import vscode from 'vscode';
+import type { F, S, O } from "ts-toolbelt";
 import commands from './commands';
 
 type Object<V, K extends keyof any> = Record<K, V>; 
@@ -46,7 +47,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-export function getConfig<K extends keyof Config>(key: K | string): Config[K] | undefined {
+export function getConfig<P extends string>(
+	key: F.AutoPath<Config, P>
+): O.Path<Config, S.Split<P, '.'>> | undefined {
 	return vscode.workspace
 		.getConfiguration("background-plus")
 		.get(key);

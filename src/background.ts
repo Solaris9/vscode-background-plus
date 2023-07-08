@@ -22,8 +22,8 @@ export const defaultCSS: Partial<Style> = {
 
 export async function install() {
     const content = await fs.readFile(cssPath, { encoding: "utf-8" });
-
     const images = getConfig("images")!;
+    
     if (!images.length) {
         vscode.window.showInformationMessage("No images were set to use.");
         return;

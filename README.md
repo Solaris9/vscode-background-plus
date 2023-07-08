@@ -63,7 +63,7 @@ The extension uses a specific order for the styles, each style will be overwritt
 
 First the [default CSS](https://github.com/Solaris9/vscode-background-plus/blob/main/src/background.ts#L14-L19) is applied, secondly the extension's global CSS in the settings.json is applied, and finally the current background image's is applied last.
 
-You can see how it works [here](https://github.com/Solaris9/vscode-background-plus/blob/main/src/background.ts#L31).
+You can see how it works [here](https://github.com/Solaris9/vscode-background-plus/blob/main/src/background.ts#L75-L80).
 
 ## Roadmap
 
