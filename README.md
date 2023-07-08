@@ -8,9 +8,10 @@ Set a custom background for your VS Code editor!
 2. Run `Background+: Add` command.
 3. Select either `Local Image` or `HTTP Image` for the kind of image to use.
    - If `Local Image` is selected, a file select dialog will be show to pick a image.
-4. Enter a name for this image, the CSS will be installed and the window will reload, you should see your custom background.
+   - If `HTTP Image` is selected, enter a URL that resolves to a image.
+4. Enter a name for this image.
 
-Enjoy!
+The CSS will be installed and the window will reload, you should see your custom background. Enjoy!
 
 ## Frequency Asked Questions
 
