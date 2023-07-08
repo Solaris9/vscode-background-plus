@@ -9,7 +9,8 @@ export type Style = Object<string,
 	"background-size" |
 	"background-repeat" |
 	"background-attachment" |
-	"background-position">;
+	"background-position" |
+	"animation-fill-mode">;
 
 export type Config = {
 	enabled: boolean;
@@ -45,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-export function getConfig<K extends keyof Config>(key: K): Config[K] | undefined {
+export function getConfig<K extends keyof Config>(key: K | string): Config[K] | undefined {
 	return vscode.workspace
 		.getConfiguration("background-plus")
 		.get(key);
@@ -56,3 +57,31 @@ export function setConfig(key: string, value: unknown) {
 		.getConfiguration("background-plus")
 		.update(key, value, true);
 }
+
+/*
+placing this here because i can't get carousel to work correctly yet 
+
+"background-plus.mode": {
+	"type": "string",
+	"description": "Fullscreen mode covers the entire window, editor mode covers each editor.",
+	"default": "fullscreen",
+	"enum": [
+	"fullscreen",
+	"editor"
+	],
+	"enumItemLabels": [
+	"Fullscreen background",
+	"Per editor window background"
+	]
+},
+"background-plus.carousel.interval": {
+	"type": "number",
+	"description": "The duration in seconds each background should be shown. Set to 0 to disable.",
+	"default": 0
+},
+"background-plus.carousel.unique": {
+	"type": "boolean",
+	"description": "If using editor mode, should each editor be a unique image?",
+	"default": true
+},
+*/

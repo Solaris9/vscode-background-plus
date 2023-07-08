@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import vscode, { QuickPick, QuickPickItem } from "vscode";
-import { defaultCSS, install, uninstall } from "./background";
+import { defaultCSS, install, reinstall, uninstall } from "./background";
 import { getConfig, setConfig } from "./extension";
 
 async function getSelected(list: QuickPick<QuickPickItem>) {    
@@ -60,35 +60,37 @@ export default {
         
         await setConfig("images", [...items, { name, url }]);
         await setConfig("selected", name);
-        await install();
+        await reinstall();
     },
     install: async function () {
-        await uninstall();
-        await install();
+        await reinstall();
     },
     uninstall: async function () {
         await uninstall();
     },
     select: async function () {
-        const items = getConfig("images")!.map(i => i.name);
+        const images = getConfig("images")!.map(i => i.name);
 
         const quickPick = vscode.window.createQuickPick();
-        quickPick.items = [
-            { label: "Remove selected background." },
-            { label: "", kind: -1 },
-            ...items.map(i => ({ label: i }))
-        ];
+        const items: vscode.QuickPickItem[] = images.map(i => ({ label: i }));
+
+        if (getConfig("selected")) {
+            items.unshift({ label: "", kind: -1 });
+            items.unshift({ label: "Remove selected background." });
+        }
+
+        quickPick.items = items;
         
         const selected = await getSelected(quickPick);
-        await setConfig("selected", selected !== "Remove" ? selected : undefined);
-        await install();
+        await setConfig("selected", selected !== "Remove selected background." ? selected : undefined);
+        await reinstall();
     },
     "global-opacity": async function () {
         const currentOpacity = getConfig("style")?.opacity ?? defaultCSS.opacity!;
         const opacity = await promptOpacity(currentOpacity);
 
         await setConfig("style", { ...getConfig("style"), opacity });
-        await install();
+        await reinstall();
     },
     "selected-opacity": async function () {
         const items = getConfig("images")!;
@@ -102,8 +104,7 @@ export default {
         const opacity = await promptOpacity(selected.style?.opacity ?? defaultCSS.opacity!);
         selected.style = { ...selected.style, opacity };
         await setConfig("images", items);
-
-        await install();
+        await reinstall();
     }
 };
 

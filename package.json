@@ -45,33 +45,10 @@
     "configuration": {
       "title": "Background+",
       "properties": {
-        "background-plus.mode": {
-          "type": "string",
-          "description": "Fullscreen mode covers the entire window, editor mode covers each editor.",
-          "default": "fullscreen",
-          "enum": [
-            "fullscreen",
-            "editor"
-          ],
-          "enumItemLabels": [
-            "Fullscreen background",
-            "Per editor window background"
-          ]
-        },
         "background-plus.selected": {
           "type": "string",
           "$schema": "",
           "description": "Use a specific image, this overrides carousel."
-        },
-        "background-plus.carousel.interval": {
-          "type": "number",
-          "description": "The duration in seconds each background should be shown. Set to 0 to disable.",
-          "default": 0
-        },
-        "background-plus.carousel.unique": {
-          "type": "boolean",
-          "description": "If using editor mode, should each editor be a unique image?",
-          "default": true
         },
         "background-plus.style": {
           "type": "object",
@@ -83,7 +60,9 @@
             "opacity": "0.85",
             "background-size": "cover",
             "background-position": "center",
-            "background-repeat": "no-repeat"
+            "background-repeat": "no-repeat",
+            "background-attachment": "fixed",
+            "animation-fill-mode": "forwards"
           }
         },
         "background-plus.images": {
@@ -107,7 +86,9 @@
                   "opacity": 0.85,
                   "background-size": "cover",
                   "background-position": "center",
-                  "background-repeat": "no-repeat"
+                  "background-repeat": "no-repeat",
+                  "background-attachment": "fixed",
+                  "animation-fill-mode": "forwards"
                 }
               }
             }
