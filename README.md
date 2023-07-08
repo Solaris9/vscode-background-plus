@@ -4,7 +4,7 @@ Set a custom background for your VS Code editor!
 
 ## How to use?
 
-1. Install this extension.
+1. Install this extension from the [marketplace](https://marketplace.visualstudio.com/items?itemName=mhargreaves.background-plus).
 2. Run `Background+: Add` command.
 3. Select either `Local Image` or `HTTP Image` for the kind of image to use.
    - If `Local Image` is selected, a file select dialog will be show to pick a image.
