@@ -13,6 +13,8 @@ Set a custom background for your VS Code editor!
 
 The CSS will be installed and the window will reload, you should see your custom background. Enjoy!
 
+To set a specific image, run `Background+: Select` and select an image from the list. VSCode will reload with the selected image.
+
 ## Frequency Asked Questions
 
 **Q: How does this differ from existing extensions?** \
@@ -67,3 +69,4 @@ You can see how it works [here](https://github.com/Solaris9/vscode-background-pl
 
 - [ ] Add carousel (more like fix tbh)
 - [ ] Each editor has it's own background image
+- [ ] Random image upon start?
